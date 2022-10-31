@@ -1,0 +1,22 @@
+.userPic{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 25%;
+    margin-top: 20%;
+    ion-avatar{
+        width: 100px;
+        height: auto;
+    } 
+}
+.userName{
+    text-align: center;
+    margin-top: 20px;
+    color: #9e0000;
+    font-weight: 700;
+}
+.btn{
+    margin-top: 35px;
+    color: #9e0000;
+    font-weight: 700;  
+}

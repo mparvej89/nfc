@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Dashboard</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="userPic">
+    <ion-avatar>
+      <img [src]="userInfo?.photo" />
+    </ion-avatar>
+  </div>
+  <div class="userName">
+    <ion-text>
+      {{userInfo?.firstname}} {{userInfo?.lastname}}
+    </ion-text>
+  </div>
+
+  <div class="userName">
+    <ion-text>
+      {{userInfo?.role}}
+    </ion-text>
+  </div>
+
+  <div class="btn">
+    <ion-button color="success" expand="block" (click)="book()" [disabled]="offLineSpotData?.length>0" *ngIf="button=='bookon'">Book On
+    </ion-button>
+
+    <ion-button color="warning" expand="block" (click)="book()" [disabled]="offLineSpotData?.length>0" *ngIf="button!='bookon'">Book Off
+    </ion-button>
+  </div>
+
+  <div class="btn">
+    <ion-button color="secondary" expand="block" (click)="scanNfc('NFC')">Scan Check Point
+    </ion-button>
+  </div>
+
+  <div class="btn" *ngIf="userInfo?.role=='admin'">
+    <ion-button color="tertiary" expand="block" (click)="testNfc()">Test NFC
+    </ion-button>
+  </div>
+
+  <div class="btn">
+    <ion-button color="primary" expand="block" (click)="syncOffline()" [disabled]="offLineSpotData.length==0"><span style="color: red;
+      font-size: 18px;
+      font-weight: 700;
+      margin-right: 15px;" *ngIf="offLineSpotData?.length"> {{offLineSpotData?.length}} </span> Sync Offline
+    </ion-button>
+  </div>
+
+  <div class="btn">
+    <ion-button color="danger" expand="block" (click)="logout()" [disabled]="offLineSpotData.length>0">Log Out
+    </ion-button>
+  </div>
+
+
+</ion-content>

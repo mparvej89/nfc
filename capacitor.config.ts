@@ -1,8 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'nfc',
+  appId: 'com.hd.protective',
+  appName: 'HD Control',
   webDir: 'www',
   bundledWebRuntime: false
 };

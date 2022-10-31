@@ -1,20 +1,47 @@
-<ion-header [translucent]="true">
+<!-- <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
       Blank
     </ion-title>
   </ion-toolbar>
-</ion-header>
+</ion-header> -->
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content [fullscreen]="true" class="ion-padding">
 
   <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+    <ion-img src="../../assets/hd-icon.png"></ion-img>
+  </div>
+  <form [formGroup]="loginForm">
+    <div class="input-div">
+      <ion-label>Email</ion-label>
+      <ion-item lines="none">
+        <ion-input type="email" name="userName" formControlName="userName" placeholder="Email"></ion-input>
+      </ion-item>
+      <div *ngIf="errorControl.userName.touched && errorControl.userName.errors?.required" class="v-error">
+       Email is required.
+      </div>
+    </div>
+
+    <div class="input-div">
+      <ion-label>Password</ion-label>
+      <ion-item lines="none">
+        <ion-input type="password" name="password" formControlName="password" placeholder="Password"></ion-input>
+      </ion-item>
+      <div *ngIf="errorControl.password.touched && errorControl.password.errors?.required" class="v-error">
+        Password is required.
+      </div>
+    </div>
+  </form>
+
+  <div class="btn">
+    <ion-button color="primary" expand="block" translate (click)="login()"
+      [disabled]="loginForm.invalid">Login
+    </ion-button>
+  </div>
+
+  <div class="info">
+    <ion-text>
+      <span><a href="https://greensoftwaretech.com/">Developed By Green Software Tech</a></span>
+    </ion-text>
   </div>
 </ion-content>

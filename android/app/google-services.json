@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "301483332055",
+    "project_id": "hd-control",
+    "storage_bucket": "hd-control.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:301483332055:android:6745bfc443c7688153fb92",
+        "android_client_info": {
+          "package_name": "com.hd.protective"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "301483332055-4la4ml1a450cdcnhvhs73r9sh6g7ncvg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_V-LxRmQjDLXd5IMvKrwVPbQvW4YKIEQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "301483332055-4la4ml1a450cdcnhvhs73r9sh6g7ncvg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "301483332055-4f7mjv575vcq206ckbdccqnptfu6r0l9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.hd.protective"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
