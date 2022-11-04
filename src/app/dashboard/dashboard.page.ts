@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiServiceService } from '../api-service.service';
 import { NFC, Ndef } from '@awesome-cordova-plugins/nfc/ngx';
-import { Platform, ToastController } from '@ionic/angular';
+import { ActionSheetController, Platform, ToastController } from '@ionic/angular';
 import { Network } from '@capacitor/network';
 
 @Component({
@@ -17,24 +17,18 @@ export class DashboardPage implements OnInit {
   networkStatus: any;
   spotData: any[] = localStorage.getItem('NFC-CODE')== null ? [] : JSON.parse(localStorage.getItem('NFC-CODE'));
   offLineSpotData: any[] = [];
+  actionSheet: HTMLIonActionSheetElement;
   constructor(private router: Router, private api: ApiServiceService,
-    private nfc: NFC, private ndef: Ndef, private platform: Platform, private toast: ToastController) {
+    private nfc: NFC, private ndef: Ndef, private platform: Platform, 
+    private toast: ToastController, private actionSheetCtrl: ActionSheetController) {
 
   }
 
   ngOnInit() {
-    this.userInfo = JSON.parse(localStorage.getItem('UserInfo'));
-    this.offLineSpotData = localStorage.getItem('NFC-CODE')== null ?[] : JSON.parse(localStorage.getItem('NFC-CODE'));
     Network.addListener('networkStatusChange', (status) => {
       this.networkStatus = status.connected;
       this.presentToast();
-
     });
-    this.api.updateFCMToken(this.userInfo.userid, localStorage.getItem('FCM-Token')).subscribe(res => {
-      console.log('token update', res);
-    }, err => {
-      console.log('token err', err);
-    })
   }
 
 
@@ -53,6 +47,15 @@ export class DashboardPage implements OnInit {
 
 
   ionViewWillEnter() {
+    this.userInfo = JSON.parse(localStorage.getItem('UserInfo'));
+    this.offLineSpotData = localStorage.getItem('NFC-CODE')== null ?[] : JSON.parse(localStorage.getItem('NFC-CODE'));
+
+    this.api.updateFCMToken(this.userInfo.userid, localStorage.getItem('FCM-Token')).subscribe(res => {
+      console.log('token update', res);
+    }, err => {
+      console.log('token err', err);
+    })
+    
     this.bookOnOff();
   }
 
@@ -80,15 +83,21 @@ export class DashboardPage implements OnInit {
     let code;
     let flags = this.nfc.FLAG_READER_NFC_A | this.nfc.FLAG_READER_NFC_V;
     if (this.platform.is('android')) {
+      this.presentActionSheet();
       this.readerMode = this.nfc.readerMode(flags).subscribe(tag => {
         let value = tag.ndefMessage[0]["payload"];
         code = this.nfc.bytesToString(value);
-        if (type == 'BOOK') {
-          this.createBook(code);
+        if(code){
+          this.actionSheet.onDidDismiss().then(res=>{
+            if (type == 'BOOK') {
+              this.createBook(code);
+            }
+            else {
+              this.spotCheck(code);
+            }
+          })
         }
-        else {
-          this.spotCheck(code);
-        }
+        
       }, err => {
         console.log('Error reading tag', err);
         alert(JSON.stringify(err));
@@ -117,7 +126,7 @@ export class DashboardPage implements OnInit {
   }
 
   book() {
-    this.scanNfc('BOOK');
+   this.scanNfc('BOOK'); 
   }
 
   createBook(code) {
@@ -164,10 +173,15 @@ export class DashboardPage implements OnInit {
     let code;
     let flags = this.nfc.FLAG_READER_NFC_A | this.nfc.FLAG_READER_NFC_V;
     if (this.platform.is('android')) {
+      this.presentActionSheet();
       this.readerMode = this.nfc.readerMode(flags).subscribe(tag => {
         let value = tag.ndefMessage[0]["payload"];
         code = this.nfc.bytesToString(value);
-        alert(code);
+        if(code){
+          this.actionSheet.onDidDismiss().then(res=>{
+            alert(code);
+          })
+        }
       }, err => {
         console.log('Error reading tag', err);
         alert(JSON.stringify(err));
@@ -215,6 +229,24 @@ export class DashboardPage implements OnInit {
       this.api.presentToast('Currently you are offline please check your internet!!');
     }
    
+  }
+
+  async presentActionSheet() {
+    this.actionSheet = await this.actionSheetCtrl.create({
+      header: 'Ready to Scan',
+      subHeader: 'Hold near NFC tag to scan',
+      mode:'ios',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          data: {
+            action: 'cancel',
+          },
+        },
+      ],
+    });
+    await this.actionSheet.present();
   }
 
 }
