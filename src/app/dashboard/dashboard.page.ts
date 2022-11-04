@@ -15,11 +15,11 @@ export class DashboardPage implements OnInit {
   button: any;
   readerMode: any;
   networkStatus: any;
-  spotData: any[] = localStorage.getItem('NFC-CODE')== null ? [] : JSON.parse(localStorage.getItem('NFC-CODE'));
+  spotData: any[] = localStorage.getItem('NFC-CODE') == null ? [] : JSON.parse(localStorage.getItem('NFC-CODE'));
   offLineSpotData: any[] = [];
   actionSheet: HTMLIonActionSheetElement;
   constructor(private router: Router, private api: ApiServiceService,
-    private nfc: NFC, private ndef: Ndef, private platform: Platform, 
+    private nfc: NFC, private ndef: Ndef, private platform: Platform,
     private toast: ToastController, private actionSheetCtrl: ActionSheetController) {
 
   }
@@ -48,14 +48,12 @@ export class DashboardPage implements OnInit {
 
   ionViewWillEnter() {
     this.userInfo = JSON.parse(localStorage.getItem('UserInfo'));
-    this.offLineSpotData = localStorage.getItem('NFC-CODE')== null ?[] : JSON.parse(localStorage.getItem('NFC-CODE'));
-
+    this.offLineSpotData = localStorage.getItem('NFC-CODE') == null ? [] : JSON.parse(localStorage.getItem('NFC-CODE'));
     this.api.updateFCMToken(this.userInfo.userid, localStorage.getItem('FCM-Token')).subscribe(res => {
       console.log('token update', res);
     }, err => {
       console.log('token err', err);
     })
-    
     this.bookOnOff();
   }
 
@@ -64,6 +62,9 @@ export class DashboardPage implements OnInit {
     this.api.bookOnOff(this.userInfo.userid).subscribe((res: any) => {
       if (res) {
         this.button = res.button;
+      }
+      if(this.platform.is('android')){
+        window.location.reload();
       }
       this.api.dissMissLoading();
     }, err => {
@@ -75,20 +76,18 @@ export class DashboardPage implements OnInit {
   logout() {
     localStorage.clear();
     this.router.navigate(['./home']);
-
   }
-
 
   async scanNfc(type) {
     let code;
-    let flags = this.nfc.FLAG_READER_NFC_A | this.nfc.FLAG_READER_NFC_V;
     if (this.platform.is('android')) {
       this.presentActionSheet();
+      let flags = this.nfc.FLAG_READER_NFC_A | this.nfc.FLAG_READER_NFC_V;
       this.readerMode = this.nfc.readerMode(flags).subscribe(tag => {
         let value = tag.ndefMessage[0]["payload"];
         code = this.nfc.bytesToString(value);
-        if(code){
-          this.actionSheet.onDidDismiss().then(res=>{
+        if (code) {
+          this.actionSheet.dismiss().then(res => {
             if (type == 'BOOK') {
               this.createBook(code);
             }
@@ -97,7 +96,7 @@ export class DashboardPage implements OnInit {
             }
           })
         }
-        
+
       }, err => {
         console.log('Error reading tag', err);
         alert(JSON.stringify(err));
@@ -121,19 +120,18 @@ export class DashboardPage implements OnInit {
         alert(JSON.stringify(err));
       }
     }
-
-
   }
 
   book() {
-   this.scanNfc('BOOK'); 
+    this.scanNfc('BOOK');
+   
   }
 
   createBook(code) {
     this.api.createBook(this.userInfo.userid, this.button, code).subscribe((res: any) => {
       if (res.status == 'success') {
-        this.bookOnOff();
         this.api.presentToast(res.details);
+        this.bookOnOff();
       }
       else {
         this.api.presentToast(res.details);
@@ -177,8 +175,8 @@ export class DashboardPage implements OnInit {
       this.readerMode = this.nfc.readerMode(flags).subscribe(tag => {
         let value = tag.ndefMessage[0]["payload"];
         code = this.nfc.bytesToString(value);
-        if(code){
-          this.actionSheet.onDidDismiss().then(res=>{
+        if (code) {
+          this.actionSheet.dismiss().then(res => {
             alert(code);
           })
         }
@@ -203,18 +201,18 @@ export class DashboardPage implements OnInit {
   }
 
   syncOffline() {
-    if(this.networkStatus){
+    if (this.networkStatus) {
       this.api.showLoading();
       this.offLineSpotData = JSON.parse(localStorage.getItem('NFC-CODE'));
-      this.api.syncOffline(this.userInfo.userid, JSON.stringify(this.offLineSpotData)).subscribe((res:any) => {
-        if(res.status=='success'){
-         localStorage.removeItem('NFC-CODE');
-         this.spotData=[];
-         this.offLineSpotData = localStorage.getItem('NFC-CODE')== null ?[] : JSON.parse(localStorage.getItem('NFC-CODE'));
-         this.api.presentToast(res.details);
-         this.api.dissMissLoading();
+      this.api.syncOffline(this.userInfo.userid, JSON.stringify(this.offLineSpotData)).subscribe((res: any) => {
+        if (res.status == 'success') {
+          localStorage.removeItem('NFC-CODE');
+          this.spotData = [];
+          this.offLineSpotData = localStorage.getItem('NFC-CODE') == null ? [] : JSON.parse(localStorage.getItem('NFC-CODE'));
+          this.api.presentToast(res.details);
+          this.api.dissMissLoading();
         }
-        else{
+        else {
           this.api.presentToast(res.details);
           this.api.dissMissLoading();
         }
@@ -222,20 +220,20 @@ export class DashboardPage implements OnInit {
         this.api.dissMissLoading();
         this.api.presentToast('Something went wrong!');
         console.log(err);
-  
+
       })
     }
-    else{
+    else {
       this.api.presentToast('Currently you are offline please check your internet!!');
     }
-   
+
   }
 
   async presentActionSheet() {
     this.actionSheet = await this.actionSheetCtrl.create({
       header: 'Ready to Scan',
       subHeader: 'Hold near NFC tag to scan',
-      mode:'ios',
+      mode: 'ios',
       buttons: [
         {
           text: 'Cancel',
@@ -248,5 +246,4 @@ export class DashboardPage implements OnInit {
     });
     await this.actionSheet.present();
   }
-
 }
