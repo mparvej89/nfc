@@ -63,9 +63,6 @@ export class DashboardPage implements OnInit {
       if (res) {
         this.button = res.button;
       }
-      if(this.platform.is('android')){
-        window.location.reload();
-      }
       this.api.dissMissLoading();
     }, err => {
       this.api.dissMissLoading();
@@ -90,6 +87,7 @@ export class DashboardPage implements OnInit {
           this.actionSheet.dismiss().then(res => {
             if (type == 'BOOK') {
               this.createBook(code);
+              window.location.reload();
             }
             else {
               this.spotCheck(code);
